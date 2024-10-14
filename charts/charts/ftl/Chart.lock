@@ -1,9 +1,0 @@
-dependencies:
-- name: postgresql
-  repository: oci://registry-1.docker.io/bitnamicharts
-  version: 15.5.38
-- name: harbor
-  repository: https://helm.goharbor.io
-  version: 1.15.1
-digest: sha256:5a14d0cc902b2697bdf1f726abbe44a58c75a9d54b4c5f8780d44136003153a5
-generated: "2024-10-14T00:01:15.60650687Z"
