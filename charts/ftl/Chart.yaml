@@ -3,8 +3,8 @@ name: ftl
 description: |
   A Helm chart for Kubernetes that deploys FTL
 home: https://github.com/TBD54566975/ftl
-version: 0.405.4
-appVersion: 0.405.4
+version: 0.405.5
+appVersion: 0.405.5
 dependencies:
   - name: postgresql
     version: 15.5.38
