@@ -2,6 +2,21 @@ apiVersion: v1
 entries:
   ftl:
   - apiVersion: v2
+    appVersion: 0.407.0
+    created: "2024-11-29T00:03:15.160752925Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 15.5.38
+    description: 'A Helm chart for Kubernetes that deploys FTL '
+    digest: 516c24f4fb5c496198d97519622f3b130ec9bb83a9b7c34476ffbb67054d2a71
+    home: https://github.com/TBD54566975/ftl
+    name: ftl
+    urls:
+    - https://github.com/TBD54566975/ftl-charts/releases/download/ftl-0.407.0/ftl-0.407.0.tgz
+    version: 0.407.0
+  - apiVersion: v2
     appVersion: 0.406.0
     created: "2024-11-28T21:33:13.786477532Z"
     dependencies:
@@ -868,4 +883,4 @@ entries:
     urls:
     - https://github.com/TBD54566975/ftl-charts/releases/download/ftl-chart-0.380.0/ftl-chart-0.380.0.tgz
     version: 0.380.0
-generated: "2024-11-28T21:33:13.78680324Z"
+generated: "2024-11-29T00:03:15.160933182Z"
