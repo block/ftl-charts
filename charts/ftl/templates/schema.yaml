@@ -1,0 +1,78 @@
+{{ $version := printf "v%s" .Chart.Version -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ftl.fullname" . }}-schema
+  labels:
+    {{- include "ftl.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.schema.replicas }}
+  revisionHistoryLimit: {{ .Values.schema.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+      {{- include "ftl-schema.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "ftl-schema.selectorLabels" . | nindent 8 }}
+      {{- if .Values.schema.podAnnotations }}
+      annotations:
+        {{- toYaml .Values.schema.podAnnotations | nindent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ .Values.schema.serviceAccountName }}
+      containers:
+        - name: app
+          image: "{{ .Values.schema.image.repository }}:{{ .Values.schema.image.tag | default $version }}"
+          imagePullPolicy: {{ .Values.schema.image.pullPolicy }}
+          {{- if .Values.schema.envFrom }}
+          envFrom:
+            {{- if .Values.schema.envFrom }}
+            {{- toYaml .Values.schema.envFrom | nindent 12 }}
+            {{- end }}
+          {{- else if or .Values.secrets.logEncryptionKey .Values.secrets.asyncEncryptionKey }}
+          envFrom:
+            - secretRef:
+                name: {{ include "ftl.fullname" . }}-secrets
+          {{- end }}
+          env:
+            {{- if .Values.schema.env }}
+            {{- toYaml .Values.schema.env | nindent 12 }}
+            {{- end }}
+            - name: FTL_BIND
+              value: "http://0.0.0.0:{{ (index .Values.schema.ports 0).containerPort }}"
+          ports:
+            {{- range .Values.schema.ports }}
+            - name: {{ .name }}
+              containerPort: {{ .containerPort }}
+              protocol: {{ .protocol | default "TCP" }}
+            {{- end }}
+          readinessProbe:
+            {{- if .Values.schema.readinessProbe }}
+            {{- toYaml .Values.schema.readinessProbe | nindent 12 }}
+            {{- else }}
+            httpGet:
+              path: /healthz
+              port: {{ (index .Values.schema.ports 0).containerPort }}
+            initialDelaySeconds: 1
+            periodSeconds: 2
+            timeoutSeconds: 2
+            successThreshold: 1
+            failureThreshold: 15
+            {{- end }}
+      {{- if .Values.schema.nodeSelector }}
+      nodeSelector:
+        {{- toYaml .Values.schema.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if .Values.schema.affinity }}
+      affinity:
+        {{- toYaml .Values.schema.affinity | nindent 8 }}
+      {{- end }}
+      {{- if .Values.schema.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml .Values.schema.topologySpreadConstraints | nindent 8 }}
+      {{- end }}
+      {{- if .Values.schema.tolerations }}
+      tolerations:
+        {{- toYaml .Values.schema.tolerations | nindent 8 }}
+      {{- end }}

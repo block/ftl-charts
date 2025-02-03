@@ -1,0 +1,8 @@
+{{- if .Values.schema.enabled }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.schema.serviceAccountName }}
+  namespace: {{ .Release.Namespace }}
+
+{{- end }}
