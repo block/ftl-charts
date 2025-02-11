@@ -1,6 +1,10 @@
 fullnameOverride: ""
 nameOverride: ""
 
+image:
+  tag: null
+  pullPolicy: IfNotPresent
+  base: "ftl0"
 
 secrets:
   logEncryptionKey: null
@@ -10,17 +14,16 @@ secrets:
   runnerRegistryUsername: null
   runnerRegistryPassword: null
 
-dbMigration:
-  enabled: true
-
 controller:
   controllersRoleArn: arn:aws:iam::ftl-controllers-irsa-role
   replicas: 1
   revisionHistoryLimit: 0
 
   image:
-    repository: "ftl0/ftl-controller"
-    pullPolicy: IfNotPresent
+    repository: null
+    tag: null
+    pullPolicy: null
+    name: "ftl-controller"
 
   resources:
     requests:
@@ -53,26 +56,14 @@ controller:
       valueFrom:
         fieldRef:
           fieldPath: status.hostIP
-#    - name: OTEL_EXPORTER_OTLP_ENDPOINT
-#      value: "http://$(HOST_IP):4317"
-#    - name: OTEL_RESOURCE_ATTRIBUTES
-#      value: "env=ftlDefault"
 
-  ports:
-    - name: http
-      containerPort: 8892
-      protocol: TCP
+  port: 8892
 
   readinessProbe: null
 
   service:
     type: ClusterIP
     annotations: null
-    ports:
-      - name: "http-8892"
-        port: 8892
-        protocol: TCP
-        targetPort: 8892
 
   podAnnotations: null
   nodeSelector: null
@@ -86,8 +77,10 @@ provisioner:
   revisionHistoryLimit: 0
   configMap: "ftl-provisioner-default-config"
   image:
-    repository: "ftl0/ftl-provisioner"
-    pullPolicy: IfNotPresent
+    repository: null
+    tag: null
+    pullPolicy: null
+    name: "ftl-provisioner"
 
   envFrom: null
   serviceAccountName: ftl-provisioner
@@ -111,10 +104,6 @@ provisioner:
       valueFrom:
         fieldRef:
           fieldPath: status.hostIP
-  ports:
-    - name: http
-      containerPort: 8893
-      protocol: TCP
 
   readinessProbe: null
 
@@ -129,7 +118,8 @@ runner:
 
   envFrom: null
   image:
-    pullPolicy: IfNotPresent
+    pullPolicy: null
+
   resources:
     requests:
       memory: 256Mi
@@ -144,8 +134,6 @@ runner:
           fieldPath: status.podIP
     - name: FTL_ENDPOINT
       value: "http://ftl-controller"
-    - name: FTL_BIND
-      value: "http://$(MY_POD_IP):8893"
     - name: LOG_LEVEL
       value: "debug"
     - name: LOG_JSON
@@ -155,10 +143,7 @@ runner:
         fieldRef:
           fieldPath: status.hostIP
 
-  ports:
-    - name: http
-      containerPort: 8892
-      protocol: TCP
+  port: 8892
 
   readinessProbe: null
 
@@ -173,8 +158,10 @@ cron:
   replicas: 1
   revisionHistoryLimit: 0
   image:
-    repository: "ftl0/ftl-cron"
-    pullPolicy: IfNotPresent
+    repository: null
+    tag: null
+    pullPolicy: null
+    name: "ftl-cron"
 
   envFrom: null
   serviceAccountName: ftl-cron
@@ -248,8 +235,10 @@ ingress:
   revisionHistoryLimit: 0
 
   image:
-    repository: "ftl0/ftl-http-ingress"
-    pullPolicy: IfNotPresent
+    repository: null
+    tag: null
+    pullPolicy: null
+    name: "ftl-http-ingress"
 
   resources:
     requests:
@@ -295,18 +284,16 @@ timeline:
         fieldRef:
           fieldPath: status.hostIP
 
-  ports:
-    - name: http
-      containerPort: 8892
-      protocol: TCP
-      port: 8892
+  port: 8892
 
   replicas: 1
   revisionHistoryLimit: 0
 
   image:
-    repository: "ftl0/ftl-timeline"
-    pullPolicy: IfNotPresent
+    repository: null
+    tag: null
+    pullPolicy: null
+    name: "ftl-timeline"
 
   resources:
     requests:
@@ -322,13 +309,7 @@ timeline:
   readinessProbe: null
 
   service:
-    type: ClusterIP
     annotations: null
-    ports:
-      - name: "http-8892"
-        port: 8892
-        protocol: TCP
-        targetPort: 8892
 
   podAnnotations: null
   nodeSelector: null
@@ -339,6 +320,7 @@ timeline:
 schema:
   enabled: true
   replicas: 3
+  storage: 50Mi
   env:
     - name: MY_POD_IP
       valueFrom:
@@ -356,8 +338,10 @@ schema:
   revisionHistoryLimit: 0
 
   image:
-    repository: "ftl0/ftl-schema"
-    pullPolicy: IfNotPresent
+    repository: null
+    tag: null
+    pullPolicy: null
+    name: "ftl-schema"
 
   resources:
     requests:
@@ -382,14 +366,13 @@ schema:
       port: 8892
     raft:
       annotations: null
-      containerPort: 8992
-      port: 8992
+      containerPort: 8893
+      port: 8893
   podAnnotations: null
   nodeSelector: null
   affinity: null
   topologySpreadConstraints: null
   tolerations: null
-
 
 console:
   enabled: true
@@ -420,8 +403,10 @@ console:
   revisionHistoryLimit: 0
 
   image:
-    repository: "ftl0/ftl-console"
-    pullPolicy: IfNotPresent
+    repository: null
+    tag: null
+    pullPolicy: null
+    name: "ftl-console"
 
   resources:
     requests:
@@ -461,8 +446,10 @@ lease:
   revisionHistoryLimit: 0
 
   image:
-    repository: "ftl0/ftl-lease"
-    pullPolicy: IfNotPresent
+    repository: null
+    tag: null
+    pullPolicy: null
+    name: "ftl-lease"
 
   resources:
     requests:
@@ -495,8 +482,10 @@ admin:
   revisionHistoryLimit: 0
 
   image:
-    repository: "ftl0/ftl-admin"
-    pullPolicy: IfNotPresent
+    repository: null
+    tag: null
+    pullPolicy: null
+    name: "ftl-admin"
 
   resources:
     requests:

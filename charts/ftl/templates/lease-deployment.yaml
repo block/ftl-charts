@@ -27,7 +27,7 @@ spec:
       serviceAccountName: {{ .Values.lease.serviceAccountName }}
       containers:
         - name: app
-          image: "{{ .Values.lease.image.repository }}:{{ .Values.lease.image.tag | default $version }}"
+          image: "{{ .Values.lease.image.repository | default (printf "%s/%s" .Values.image.base .Values.lease.image.name) }}:{{ .Values.lease.image.tag | default .Values.image.tag | default $version }}"
           imagePullPolicy: {{ .Values.lease.image.pullPolicy }}
           resources:
             limits:
@@ -74,19 +74,4 @@ spec:
             successThreshold: 1
             failureThreshold: 15
             {{- end }}
-      {{- if .Values.lease.nodeSelector }}
-      nodeSelector:
-        {{- toYaml .Values.lease.nodeSelector | nindent 8 }}
-      {{- end }}
-      {{- if .Values.lease.affinity }}
-      affinity:
-        {{- toYaml .Values.lease.affinity | nindent 8 }}
-      {{- end }}
-      {{- if .Values.lease.topologySpreadConstraints }}
-      topologySpreadConstraints:
-        {{- toYaml .Values.lease.topologySpreadConstraints | nindent 8 }}
-      {{- end }}
-      {{- if .Values.lease.tolerations }}
-      tolerations:
-        {{- toYaml .Values.lease.tolerations | nindent 8 }}
-      {{- end }}
+      {{- include "ftl.commonPodConfig" .Values.lease | nindent 6 }}

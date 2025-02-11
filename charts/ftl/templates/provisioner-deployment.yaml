@@ -27,7 +27,7 @@ spec:
       serviceAccountName: {{ .Values.provisioner.serviceAccountName }}
       containers:
         - name: app
-          image: "{{ .Values.provisioner.image.repository }}:{{ .Values.provisioner.image.tag | default $version }}"
+          image: "{{ .Values.provisioner.image.repository | default (printf "%s/%s" .Values.image.base .Values.provisioner.image.name) }}:{{ .Values.provisioner.image.tag | default .Values.image.tag | default $version }}"
           imagePullPolicy: {{ .Values.provisioner.image.pullPolicy }}
           {{- if .Values.provisioner.envFrom }}
           envFrom:
@@ -43,14 +43,6 @@ spec:
             {{- if .Values.provisioner.env }}
             {{- toYaml .Values.provisioner.env | nindent 12 }}
             {{- end }}
-            - name: FTL_BIND
-              value: "http://0.0.0.0:{{ (index .Values.provisioner.ports 0).containerPort }}"
-          ports:
-            {{- range .Values.provisioner.ports }}
-            - name: {{ .name }}
-              containerPort: {{ .containerPort }}
-              protocol: {{ .protocol | default "TCP" }}
-            {{- end }}
           volumeMounts:
             - mountPath: /config
               name: config
@@ -58,19 +50,4 @@ spec:
         - name: config
           configMap:
             name: {{ .Values.provisioner.configMap }}
-      {{- if .Values.provisioner.nodeSelector }}
-      nodeSelector:
-        {{- toYaml .Values.provisioner.nodeSelector | nindent 8 }}
-      {{- end }}
-      {{- if .Values.provisioner.affinity }}
-      affinity:
-        {{- toYaml .Values.provisioner.affinity | nindent 8 }}
-      {{- end }}
-      {{- if .Values.provisioner.topologySpreadConstraints }}
-      topologySpreadConstraints:
-        {{- toYaml .Values.provisioner.topologySpreadConstraints | nindent 8 }}
-      {{- end }}
-      {{- if .Values.provisioner.tolerations }}
-      tolerations:
-        {{- toYaml .Values.provisioner.tolerations | nindent 8 }}
-      {{- end }}
+      {{- include "ftl.commonPodConfig" .Values.provisioner | nindent 6 }}

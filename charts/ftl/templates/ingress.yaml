@@ -24,14 +24,14 @@ spec:
               name: ftl-http-ingress
               port:
                 number: 8891
-        - path: /xyz.block.ftl.provisioner.v1beta1.ProvisionerService/
+        - path: /xyz.block.ftl.v1.SchemaService/
           pathType: Prefix
           backend:
             service:
-              name: ftl-provisioner
+              name: ftl-schema
               port:
-                number: 8893
-        - path: /xyz.block.ftl.v1.SchemaService/
+                number: 8892
+        - path: /xyz.block.ftl.raft.v1.RaftService/
           pathType: Prefix
           backend:
             service:

@@ -28,7 +28,7 @@ spec:
       serviceAccountName: {{ .Values.console.serviceAccountName }}
       containers:
         - name: app
-          image: "{{ .Values.console.image.repository }}:{{ .Values.console.image.tag | default $version }}"
+          image: "{{ .Values.console.image.repository | default (printf "%s/%s" .Values.image.base .Values.console.image.name) }}:{{ .Values.console.image.tag | default .Values.image.tag | default $version }}"
           imagePullPolicy: {{ .Values.console.image.pullPolicy }}
           resources:
             limits:
@@ -76,20 +76,6 @@ spec:
             successThreshold: 1
             failureThreshold: 15
             {{- end }}
-      {{- if .Values.console.nodeSelector }}
-      nodeSelector:
-        {{- toYaml .Values.console.nodeSelector | nindent 8 }}
-      {{- end }}
-      {{- if .Values.console.affinity }}
-      affinity:
-        {{- toYaml .Values.console.affinity | nindent 8 }}
-      {{- end }}
-      {{- if .Values.console.topologySpreadConstraints }}
-      topologySpreadConstraints:
-        {{- toYaml .Values.console.topologySpreadConstraints | nindent 8 }}
-      {{- end }}
-      {{- if .Values.console.tolerations }}
-      tolerations:
-        {{- toYaml .Values.console.tolerations | nindent 8 }}
-      {{- end }}
+      {{- include "ftl.commonPodConfig" .Values.console | nindent 6 }}
+
 {{- end }}

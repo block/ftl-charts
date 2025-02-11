@@ -35,7 +35,7 @@ spec:
       serviceAccountName: {{ .Values.schema.serviceAccountName }}
       containers:
         - name: app
-          image: "{{ .Values.schema.image.repository }}:{{ .Values.schema.image.tag | default $version }}"
+          image: "{{ .Values.schema.image.repository | default (printf "%s/%s" .Values.image.base .Values.schema.image.name) }}:{{ .Values.schema.image.tag | default .Values.image.tag | default $version }}"
           imagePullPolicy: {{ .Values.schema.image.pullPolicy }}
           {{- if .Values.schema.envFrom }}
           envFrom:
@@ -47,6 +47,9 @@ spec:
             - secretRef:
                 name: {{ include "ftl.fullname" . }}-secrets
           {{- end }}
+          volumeMounts:
+          - name: schema-raft-storage
+            mountPath: /data/raft
           env:
             {{- if .Values.schema.env }}
             {{- toYaml .Values.schema.env | nindent 12 }}
@@ -55,18 +58,18 @@ spec:
               value: "http://0.0.0.0:{{ .Values.schema.services.schema.containerPort }}"
             - name: RAFT_INITIAL_MEMBERS
               value: "{{- range $index := until (.Values.schema.replicas | int ) }}{{- if ne $index 0 -}},{{- end -}}ftl-schema-{{ add $index 1  }}.ftl-schema-raft:{{$.Values.schema.services.raft.port}}{{- end -}}"
+            - name: RAFT_INITIAL_REPLICA_IDS
+              value: "{{- range $index := until (.Values.schema.replicas | int ) }}{{- if ne $index 0 -}},{{- end -}}{{ add $index 1  }}{{- end -}}"
             - name: RAFT_DATA_DIR
-              value: "/tmp/ftl-schema-$(ORDINAL_NUMBER)"
+              value: "/data/raft"
             - name: ORDINAL_NUMBER
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.labels['apps.kubernetes.io/pod-index']
             - name: RAFT_ADDRESS
-              value: "ftl-schema-$(ORDINAL_NUMBER).ftl-schema-raft:8992"
-            - name: RAFT_REPLICA_ID
-              value: "$(ORDINAL_NUMBER)"
+              value: "ftl-schema-$(ORDINAL_NUMBER).ftl-schema-raft:{{$.Values.schema.services.raft.port}}"
             - name: RAFT_LISTEN_ADDRESS
-              value: "$(MY_POD_IP):8992"
+              value: "$(MY_POD_IP):{{$.Values.schema.services.raft.port}}"
             - name: RAFT_CONTROL_ADDRESS
               value: "http://ftl-schema:8892"
           ports:
@@ -89,19 +92,14 @@ spec:
             successThreshold: 1
             failureThreshold: 15
             {{- end }}
-      {{- if .Values.schema.nodeSelector }}
-      nodeSelector:
-        {{- toYaml .Values.schema.nodeSelector | nindent 8 }}
-      {{- end }}
-      {{- if .Values.schema.affinity }}
-      affinity:
-        {{- toYaml .Values.schema.affinity | nindent 8 }}
-      {{- end }}
-      {{- if .Values.schema.topologySpreadConstraints }}
-      topologySpreadConstraints:
-        {{- toYaml .Values.schema.topologySpreadConstraints | nindent 8 }}
-      {{- end }}
-      {{- if .Values.schema.tolerations }}
-      tolerations:
-        {{- toYaml .Values.schema.tolerations | nindent 8 }}
-      {{- end }}
+      {{- include "ftl.commonPodConfig" .Values.schema | nindent 6 }}
+
+  volumeClaimTemplates:
+  - metadata:
+      name: schema-raft-storage  # This name will be used as a PVC name
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: {{ .Values.schema.storage }}

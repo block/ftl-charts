@@ -28,7 +28,7 @@ spec:
       serviceAccountName: {{ .Values.timeline.serviceAccountName }}
       containers:
         - name: app
-          image: "{{ .Values.timeline.image.repository }}:{{ .Values.timeline.image.tag | default $version }}"
+          image: "{{ .Values.timeline.image.repository | default (printf "%s/%s" .Values.image.base .Values.timeline.image.name) }}:{{ .Values.timeline.image.tag | default .Values.image.tag | default $version }}"
           imagePullPolicy: {{ .Values.timeline.image.pullPolicy }}
           resources:
             limits:
@@ -49,11 +49,9 @@ spec:
             {{- end }}
 
           ports:
-            {{- range .Values.timeline.ports }}
-            - name: {{ .name }}
-              containerPort: {{ .containerPort }}
-              protocol: {{ .protocol | default "TCP" }}
-            {{- end }}
+            - name: http2
+              containerPort: {{ .Values.timeline.port }}
+              protocol: "TCP"
           readinessProbe:
             {{- if .Values.timeline.readinessProbe }}
             {{- toYaml .Values.timeline.readinessProbe | nindent 12 }}
@@ -67,21 +65,6 @@ spec:
             successThreshold: 1
             failureThreshold: 15
             {{- end }}
-      {{- if .Values.timeline.nodeSelector }}
-      nodeSelector:
-        {{- toYaml .Values.timeline.nodeSelector | nindent 8 }}
-      {{- end }}
-      {{- if .Values.timeline.affinity }}
-      affinity:
-        {{- toYaml .Values.timeline.affinity | nindent 8 }}
-      {{- end }}
-      {{- if .Values.timeline.topologySpreadConstraints }}
-      topologySpreadConstraints:
-        {{- toYaml .Values.timeline.topologySpreadConstraints | nindent 8 }}
-      {{- end }}
-      {{- if .Values.timeline.tolerations }}
-      tolerations:
-        {{- toYaml .Values.timeline.tolerations | nindent 8 }}
-      {{- end }}
+      {{- include "ftl.commonPodConfig" .Values.timeline | nindent 6 }}
 
-      {{- end }}
+{{- end }}

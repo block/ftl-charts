@@ -27,7 +27,7 @@ spec:
       serviceAccountName: {{ .Values.admin.serviceAccountName }}
       containers:
         - name: app
-          image: "{{ .Values.admin.image.repository }}:{{ .Values.admin.image.tag | default $version }}"
+          image: "{{ .Values.admin.image.repository | default (printf "%s/%s" .Values.image.base .Values.admin.image.name) }}:{{ .Values.admin.image.tag | default .Values.image.tag | default $version }}"
           imagePullPolicy: {{ .Values.admin.image.pullPolicy }}
           resources:
             limits:
@@ -81,19 +81,5 @@ spec:
             successThreshold: 1
             failureThreshold: 15
             {{- end }}
-      {{- if .Values.admin.nodeSelector }}
-      nodeSelector:
-        {{- toYaml .Values.admin.nodeSelector | nindent 8 }}
-      {{- end }}
-      {{- if .Values.admin.affinity }}
-      affinity:
-        {{- toYaml .Values.admin.affinity | nindent 8 }}
-      {{- end }}
-      {{- if .Values.admin.topologySpreadConstraints }}
-      topologySpreadConstraints:
-        {{- toYaml .Values.admin.topologySpreadConstraints | nindent 8 }}
-      {{- end }}
-      {{- if .Values.admin.tolerations }}
-      tolerations:
-        {{- toYaml .Values.admin.tolerations | nindent 8 }}
-      {{- end }}
+      {{- include "ftl.commonPodConfig" .Values.admin | nindent 6 }}
+
