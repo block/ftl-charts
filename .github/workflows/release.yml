@@ -33,6 +33,7 @@ jobs:
           helm repo add goharbor https://helm.goharbor.io
       - name: Update dependencies
         run: |
+          helm dependency update charts/ftl
           helm dependency update charts/ftl-k3d
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.6.0
