@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   ftl:
   - apiVersion: v2
+    appVersion: 0.469.0
+    created: "2025-03-21T06:30:02.626374221Z"
+    description: 'A Helm chart for Kubernetes that deploys FTL '
+    digest: 6c401350ab6e92972902fff105c1677500c5778f188ca9cd745f69065817efe3
+    home: https://github.com/block/ftl
+    name: ftl
+    urls:
+    - https://github.com/block/ftl-charts/releases/download/ftl-0.469.0/ftl-0.469.0.tgz
+    version: 0.469.0
+  - apiVersion: v2
     appVersion: 0.468.2
     created: "2025-03-20T04:01:19.105349145Z"
     description: 'A Helm chart for Kubernetes that deploys FTL '
@@ -2675,6 +2685,21 @@ entries:
     version: 0.380.0
   ftl-k3d:
   - apiVersion: v2
+    appVersion: 0.469.0
+    created: "2025-03-21T06:30:02.761666911Z"
+    dependencies:
+    - name: ftl
+      repository: file://../ftl
+      version: 0.469.0
+    description: 'A Helm chart for Kubernetes that deploys supplimental dependencies
+      for k3d '
+    digest: 8ab863fc6bad1673969f64185c920bda07e6bee7cdb5ebfd465333cb74baf3ca
+    home: https://github.com/block/ftl
+    name: ftl-k3d
+    urls:
+    - https://github.com/block/ftl-charts/releases/download/ftl-k3d-0.469.0/ftl-k3d-0.469.0.tgz
+    version: 0.469.0
+  - apiVersion: v2
     appVersion: 0.468.2
     created: "2025-03-20T04:01:19.203961882Z"
     dependencies:
@@ -2749,4 +2774,4 @@ entries:
     urls:
     - https://github.com/block/ftl-charts/releases/download/ftl-k3d-0.465.0/ftl-k3d-0.465.0.tgz
     version: 0.465.0
-generated: "2025-03-20T04:01:19.204443392Z"
+generated: "2025-03-21T06:30:02.762234992Z"
