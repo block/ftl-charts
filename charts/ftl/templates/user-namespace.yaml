@@ -1,0 +1,9 @@
+{{- if .Values.provisioner.userNamespace }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app.kubernetes.io/part-of: {{ include "ftl.fullname" . }}
+    {{- include "ftl.labels" . | nindent 4 }}
+  name: {{ .Values.provisioner.userNamespace }}
+{{- end }}
