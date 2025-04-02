@@ -4,8 +4,8 @@ metadata:
   name: ftl-ingress
   annotations:
     ingress.kubernetes.io/ssl-redirect: "false"
-    kubernetes.io/ingress.class: traefik
 spec:
+  ingressClassName: traefik
   rules:
   - http:
       paths:
@@ -37,3 +37,11 @@ spec:
               name: ftl-admin
               port:
                 number: 8892
+        - path: /xyz.block.ftl.timeline.v1.TimelineService
+          pathType: Prefix
+          backend:
+            service:
+              name: ftl-timeline
+              port:
+                number: 8892
+
