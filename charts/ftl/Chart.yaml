@@ -3,5 +3,5 @@ name: ftl
 description: |
   A Helm chart for Kubernetes that deploys FTL
 home: https://github.com/block/ftl
-version: 0.493.1
-appVersion: 0.493.1
+version: 0.493.2
+appVersion: 0.493.2
